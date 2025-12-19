@@ -1,0 +1,11 @@
+.vscode/
+_minted-*/
+*.zip
+*.pdf
+*.aux
+*.log
+*.out
+*.toc
+*.gz
+*.thm
+build/

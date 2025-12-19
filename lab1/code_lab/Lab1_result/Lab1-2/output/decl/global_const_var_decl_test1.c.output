@@ -1,0 +1,88 @@
+[@0,0:4='const',<27>,1:0]
+[@1,6:8='int',<24>,1:6]
+[@2,10:10='a',<28>,1:10]
+[@3,11:11='=',<3>,1:11]
+[@4,12:12='1',<29>,1:12]
+[@5,13:13=';',<2>,1:13]
+[@6,15:19='const',<27>,2:0]
+[@7,21:23='int',<24>,2:6]
+[@8,25:25='f',<28>,2:10]
+[@9,26:26='=',<3>,2:11]
+[@10,27:27='1',<29>,2:12]
+[@11,28:28=',',<1>,2:13]
+[@12,29:29='g',<28>,2:14]
+[@13,30:30='=',<3>,2:15]
+[@14,31:31='1',<29>,2:16]
+[@15,32:32=';',<2>,2:17]
+[@16,34:33='<EOF>',<-1>,3:0]
+(compUnit (decl (constDecl const (bType int) (constDef a = (exp (number 1))) ;)) (decl (constDecl const (bType int) (constDef f = (exp (number 1))) , (constDef g = (exp (number 1))) ;)) <EOF>)
+Ast:
+{
+    "type": "comp_unit_node",
+    "line": 1,
+    "pos": 0,
+    "global_defs": [
+        {
+            "type": "var_def_stmt_node",
+            "line": 1,
+            "pos": 0,
+            "var_def_nodes": [
+                {
+                    "type": "var_def_node",
+                    "line": 1,
+                    "pos": 10,
+                    "is_const": true,
+                    "is_obc": false,
+                    "name": "a",
+                    "BType": "INT",
+                    "vardef_initializer": {
+                        "type": "number_node",
+                        "line": 1,
+                        "pos": 12,
+                        "BType": "INT",
+                        "number": 1
+                    }
+                }
+            ]
+        },
+        {
+            "type": "var_def_stmt_node",
+            "line": 2,
+            "pos": 0,
+            "var_def_nodes": [
+                {
+                    "type": "var_def_node",
+                    "line": 2,
+                    "pos": 10,
+                    "is_const": true,
+                    "is_obc": false,
+                    "name": "f",
+                    "BType": "INT",
+                    "vardef_initializer": {
+                        "type": "number_node",
+                        "line": 2,
+                        "pos": 12,
+                        "BType": "INT",
+                        "number": 1
+                    }
+                },
+                {
+                    "type": "var_def_node",
+                    "line": 2,
+                    "pos": 14,
+                    "is_const": true,
+                    "is_obc": false,
+                    "name": "g",
+                    "BType": "INT",
+                    "vardef_initializer": {
+                        "type": "number_node",
+                        "line": 2,
+                        "pos": 16,
+                        "BType": "INT",
+                        "number": 1
+                    }
+                }
+            ]
+        }
+    ]
+}

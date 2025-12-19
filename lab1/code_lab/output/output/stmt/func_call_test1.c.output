@@ -1,0 +1,105 @@
+[@0,0:3='void',<25>,1:0]
+[@1,5:5='g',<28>,1:5]
+[@2,6:6='(',<8>,1:6]
+[@3,7:7=')',<9>,1:7]
+[@4,8:8='{',<6>,1:8]
+[@5,13:15='int',<24>,2:3]
+[@6,17:17='b',<28>,2:7]
+[@7,18:18=';',<2>,2:8]
+[@8,20:20='}',<7>,3:0]
+[@9,23:26='void',<25>,5:0]
+[@10,28:28='f',<28>,5:5]
+[@11,29:29='(',<8>,5:6]
+[@12,30:30=')',<9>,5:7]
+[@13,31:31='{',<6>,5:8]
+[@14,36:38='int',<24>,6:3]
+[@15,40:40='a',<28>,6:7]
+[@16,42:42='=',<3>,6:9]
+[@17,44:44='1',<29>,6:11]
+[@18,45:45=';',<2>,6:12]
+[@19,50:50='g',<28>,7:3]
+[@20,51:51='(',<8>,7:4]
+[@21,52:52=')',<9>,7:5]
+[@22,53:53=';',<2>,7:6]
+[@23,55:55='}',<7>,8:0]
+[@24,57:56='<EOF>',<-1>,9:0]
+(compUnit (funcDef void g ( ) (block { (blockItem (decl (varDecl (bType int) (varDef b) ;))) })) (funcDef void f ( ) (block { (blockItem (decl (varDecl (bType int) (varDef a = (exp (number 1))) ;))) (blockItem (stmt g ( ) ;)) })) <EOF>)
+Ast:
+{
+    "type": "comp_unit_node",
+    "line": 1,
+    "pos": 0,
+    "global_defs": [
+        {
+            "type": "func_def_node",
+            "line": 1,
+            "pos": 0,
+            "name": "g",
+            "body": {
+                "type": "block_node",
+                "line": 1,
+                "pos": 8,
+                "body": [
+                    {
+                        "type": "var_def_stmt_node",
+                        "line": 2,
+                        "pos": 3,
+                        "var_def_nodes": [
+                            {
+                                "type": "var_def_node",
+                                "line": 2,
+                                "pos": 7,
+                                "is_const": false,
+                                "is_obc": false,
+                                "name": "b",
+                                "BType": "INT"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "func_def_node",
+            "line": 5,
+            "pos": 0,
+            "name": "f",
+            "body": {
+                "type": "block_node",
+                "line": 5,
+                "pos": 8,
+                "body": [
+                    {
+                        "type": "var_def_stmt_node",
+                        "line": 6,
+                        "pos": 3,
+                        "var_def_nodes": [
+                            {
+                                "type": "var_def_node",
+                                "line": 6,
+                                "pos": 7,
+                                "is_const": false,
+                                "is_obc": false,
+                                "name": "a",
+                                "BType": "INT",
+                                "vardef_initializer": {
+                                    "type": "number_node",
+                                    "line": 6,
+                                    "pos": 11,
+                                    "BType": "INT",
+                                    "number": 1
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "func_call_stmt_node",
+                        "line": 7,
+                        "pos": 3,
+                        "name": "g"
+                    }
+                ]
+            }
+        }
+    ]
+}

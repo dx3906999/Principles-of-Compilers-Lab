@@ -1,0 +1,160 @@
+[@0,0:2='int',<24>,1:0]
+[@1,4:4='a',<28>,1:4]
+[@2,6:6='=',<3>,1:6]
+[@3,8:8='1',<29>,1:8]
+[@4,9:9=';',<2>,1:9]
+[@5,12:15='void',<25>,3:0]
+[@6,17:17='f',<28>,3:5]
+[@7,18:18='(',<8>,3:6]
+[@8,19:19=')',<9>,3:7]
+[@9,20:20='{',<6>,3:8]
+[@10,25:29='while',<12>,4:3]
+[@11,30:30='(',<8>,4:8]
+[@12,31:31='a',<28>,4:9]
+[@13,33:34='!=',<14>,4:11]
+[@14,36:37='12',<29>,4:14]
+[@15,38:38=')',<9>,4:16]
+[@16,39:39='{',<6>,4:17]
+[@17,48:48='a',<28>,5:7]
+[@18,50:50='=',<3>,5:9]
+[@19,52:52='a',<28>,5:11]
+[@20,54:54='+',<19>,5:13]
+[@21,56:56='1',<29>,5:15]
+[@22,57:57=';',<2>,5:16]
+[@23,66:68='int',<24>,6:7]
+[@24,70:70='b',<28>,6:11]
+[@25,72:72='=',<3>,6:13]
+[@26,74:74='2',<29>,6:15]
+[@27,75:75=';',<2>,6:16]
+[@28,80:80='}',<7>,7:3]
+[@29,82:82='}',<7>,8:0]
+[@30,84:83='<EOF>',<-1>,9:0]
+(compUnit (decl (varDecl (bType int) (varDef a = (exp (number 1))) ;)) (funcDef void f ( ) (block { (blockItem (stmt while ( (cond (exp (lval a)) != (exp (number 12))) ) (stmt (block { (blockItem (stmt (lval a) = (exp (exp (lval a)) + (exp (number 1))) ;)) (blockItem (decl (varDecl (bType int) (varDef b = (exp (number 2))) ;))) })))) })) <EOF>)
+Ast:
+{
+    "type": "comp_unit_node",
+    "line": 1,
+    "pos": 0,
+    "global_defs": [
+        {
+            "type": "var_def_stmt_node",
+            "line": 1,
+            "pos": 0,
+            "var_def_nodes": [
+                {
+                    "type": "var_def_node",
+                    "line": 1,
+                    "pos": 4,
+                    "is_const": false,
+                    "is_obc": false,
+                    "name": "a",
+                    "BType": "INT",
+                    "vardef_initializer": {
+                        "type": "number_node",
+                        "line": 1,
+                        "pos": 8,
+                        "BType": "INT",
+                        "number": 1
+                    }
+                }
+            ]
+        },
+        {
+            "type": "func_def_node",
+            "line": 3,
+            "pos": 0,
+            "name": "f",
+            "body": {
+                "type": "block_node",
+                "line": 3,
+                "pos": 8,
+                "body": [
+                    {
+                        "type": "while_stmt_node",
+                        "line": 4,
+                        "pos": 3,
+                        "cond": {
+                            "type": "cond_node",
+                            "line": 4,
+                            "pos": 9,
+                            "op": "NON_EQUAL",
+                            "lhs": {
+                                "type": "lval_node",
+                                "line": 4,
+                                "pos": 9,
+                                "name": "a"
+                            },
+                            "rhs": {
+                                "type": "number_node",
+                                "line": 4,
+                                "pos": 14,
+                                "BType": "INT",
+                                "number": 12
+                            }
+                        },
+                        "body": {
+                            "type": "block_node",
+                            "line": 4,
+                            "pos": 17,
+                            "body": [
+                                {
+                                    "type": "assign_stmt_node",
+                                    "line": 5,
+                                    "pos": 7,
+                                    "target": {
+                                        "type": "lval_node",
+                                        "line": 5,
+                                        "pos": 7,
+                                        "name": "a"
+                                    },
+                                    "value": {
+                                        "type": "binop_expr_node",
+                                        "line": 5,
+                                        "pos": 11,
+                                        "op": "PLUS",
+                                        "lhs": {
+                                            "type": "lval_node",
+                                            "line": 5,
+                                            "pos": 11,
+                                            "name": "a"
+                                        },
+                                        "rhs": {
+                                            "type": "number_node",
+                                            "line": 5,
+                                            "pos": 15,
+                                            "BType": "INT",
+                                            "number": 1
+                                        }
+                                    }
+                                },
+                                {
+                                    "type": "var_def_stmt_node",
+                                    "line": 6,
+                                    "pos": 7,
+                                    "var_def_nodes": [
+                                        {
+                                            "type": "var_def_node",
+                                            "line": 6,
+                                            "pos": 11,
+                                            "is_const": false,
+                                            "is_obc": false,
+                                            "name": "b",
+                                            "BType": "INT",
+                                            "vardef_initializer": {
+                                                "type": "number_node",
+                                                "line": 6,
+                                                "pos": 15,
+                                                "BType": "INT",
+                                                "number": 2
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

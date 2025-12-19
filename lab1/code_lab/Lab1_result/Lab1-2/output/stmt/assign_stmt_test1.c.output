@@ -1,0 +1,89 @@
+[@0,0:3='void',<25>,1:0]
+[@1,5:5='f',<28>,1:5]
+[@2,6:6='(',<8>,1:6]
+[@3,7:7=')',<9>,1:7]
+[@4,8:8='{',<6>,1:8]
+[@5,13:15='int',<24>,2:3]
+[@6,17:17='a',<28>,2:7]
+[@7,18:18='=',<3>,2:8]
+[@8,19:19='1',<29>,2:9]
+[@9,20:20=',',<1>,2:10]
+[@10,21:21='b',<28>,2:11]
+[@11,22:22=';',<2>,2:12]
+[@12,27:27='b',<28>,3:3]
+[@13,28:28='=',<3>,3:4]
+[@14,29:29='a',<28>,3:5]
+[@15,30:30=';',<2>,3:6]
+[@16,32:32='}',<7>,4:0]
+[@17,34:33='<EOF>',<-1>,5:0]
+(compUnit (funcDef void f ( ) (block { (blockItem (decl (varDecl (bType int) (varDef a = (exp (number 1))) , (varDef b) ;))) (blockItem (stmt (lval b) = (exp (lval a)) ;)) })) <EOF>)
+Ast:
+{
+    "type": "comp_unit_node",
+    "line": 1,
+    "pos": 0,
+    "global_defs": [
+        {
+            "type": "func_def_node",
+            "line": 1,
+            "pos": 0,
+            "name": "f",
+            "body": {
+                "type": "block_node",
+                "line": 1,
+                "pos": 8,
+                "body": [
+                    {
+                        "type": "var_def_stmt_node",
+                        "line": 2,
+                        "pos": 3,
+                        "var_def_nodes": [
+                            {
+                                "type": "var_def_node",
+                                "line": 2,
+                                "pos": 7,
+                                "is_const": false,
+                                "is_obc": false,
+                                "name": "a",
+                                "BType": "INT",
+                                "vardef_initializer": {
+                                    "type": "number_node",
+                                    "line": 2,
+                                    "pos": 9,
+                                    "BType": "INT",
+                                    "number": 1
+                                }
+                            },
+                            {
+                                "type": "var_def_node",
+                                "line": 2,
+                                "pos": 11,
+                                "is_const": false,
+                                "is_obc": false,
+                                "name": "b",
+                                "BType": "INT"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "assign_stmt_node",
+                        "line": 3,
+                        "pos": 3,
+                        "target": {
+                            "type": "lval_node",
+                            "line": 3,
+                            "pos": 3,
+                            "name": "b"
+                        },
+                        "value": {
+                            "type": "lval_node",
+                            "line": 3,
+                            "pos": 5,
+                            "name": "a"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

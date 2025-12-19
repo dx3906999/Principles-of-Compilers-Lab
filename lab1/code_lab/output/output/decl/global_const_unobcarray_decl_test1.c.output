@@ -1,0 +1,113 @@
+[@0,0:4='const',<27>,1:0]
+[@1,6:8='int',<24>,1:6]
+[@2,10:10='b',<28>,1:10]
+[@3,11:11='[',<4>,1:11]
+[@4,12:12=']',<5>,1:12]
+[@5,14:14='=',<3>,1:14]
+[@6,16:16='{',<6>,1:16]
+[@7,17:17='1',<29>,1:17]
+[@8,18:18=',',<1>,1:18]
+[@9,19:19='2',<29>,1:19]
+[@10,20:20='}',<7>,1:20]
+[@11,21:21=';',<2>,1:21]
+[@12,23:27='const',<27>,2:0]
+[@13,29:31='int',<24>,2:6]
+[@14,33:33='c',<28>,2:10]
+[@15,34:34='[',<4>,2:11]
+[@16,35:36='20',<29>,2:12]
+[@17,37:37=']',<5>,2:14]
+[@18,39:39='=',<3>,2:16]
+[@19,41:41='{',<6>,2:18]
+[@20,42:42='1',<29>,2:19]
+[@21,43:43=',',<1>,2:20]
+[@22,44:44='2',<29>,2:21]
+[@23,45:45='}',<7>,2:22]
+[@24,46:46=';',<2>,2:23]
+[@25,48:47='<EOF>',<-1>,3:0]
+(compUnit (decl (constDecl const (bType int) (constDef (array (unobcArray b [ ])) = { (exp (number 1)) , (exp (number 2)) }) ;)) (decl (constDecl const (bType int) (constDef (array (unobcArray c [ (exp (number 20)) ])) = { (exp (number 1)) , (exp (number 2)) }) ;)) <EOF>)
+Ast:
+{
+    "type": "comp_unit_node",
+    "line": 1,
+    "pos": 0,
+    "global_defs": [
+        {
+            "type": "var_def_stmt_node",
+            "line": 1,
+            "pos": 0,
+            "var_def_nodes": [
+                {
+                    "type": "var_def_node",
+                    "line": 1,
+                    "pos": 10,
+                    "is_const": true,
+                    "is_obc": false,
+                    "name": "b",
+                    "BType": "INT",
+                    "array_length": {
+                        "type": "number_node",
+                        "line": 1,
+                        "pos": 11,
+                        "BType": "INT",
+                        "number": 2
+                    },
+                    "array_initializers": [
+                        {
+                            "type": "number_node",
+                            "line": 1,
+                            "pos": 17,
+                            "BType": "INT",
+                            "number": 1
+                        },
+                        {
+                            "type": "number_node",
+                            "line": 1,
+                            "pos": 19,
+                            "BType": "INT",
+                            "number": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "var_def_stmt_node",
+            "line": 2,
+            "pos": 0,
+            "var_def_nodes": [
+                {
+                    "type": "var_def_node",
+                    "line": 2,
+                    "pos": 10,
+                    "is_const": true,
+                    "is_obc": false,
+                    "name": "c",
+                    "BType": "INT",
+                    "array_length": {
+                        "type": "number_node",
+                        "line": 2,
+                        "pos": 12,
+                        "BType": "INT",
+                        "number": 20
+                    },
+                    "array_initializers": [
+                        {
+                            "type": "number_node",
+                            "line": 2,
+                            "pos": 19,
+                            "BType": "INT",
+                            "number": 1
+                        },
+                        {
+                            "type": "number_node",
+                            "line": 2,
+                            "pos": 21,
+                            "BType": "INT",
+                            "number": 2
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

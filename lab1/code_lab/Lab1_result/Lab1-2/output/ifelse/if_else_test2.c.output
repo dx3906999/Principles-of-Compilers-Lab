@@ -1,0 +1,165 @@
+[@0,0:2='int',<24>,1:0]
+[@1,4:4='a',<28>,1:4]
+[@2,6:6='=',<3>,1:6]
+[@3,8:8='1',<29>,1:8]
+[@4,9:9=';',<2>,1:9]
+[@5,12:15='void',<25>,3:0]
+[@6,17:20='main',<28>,3:5]
+[@7,21:21='(',<8>,3:9]
+[@8,22:22=')',<9>,3:10]
+[@9,23:23='{',<6>,3:11]
+[@10,29:30='if',<10>,4:4]
+[@11,31:31='(',<8>,4:6]
+[@12,32:32='a',<28>,4:7]
+[@13,34:34='>',<16>,4:9]
+[@14,36:36='2',<29>,4:11]
+[@15,37:37=')',<9>,4:12]
+[@16,38:38='{',<6>,4:13]
+[@17,48:50='int',<24>,5:8]
+[@18,52:52='b',<28>,5:12]
+[@19,54:54='=',<3>,5:14]
+[@20,56:56='3',<29>,5:16]
+[@21,57:57=';',<2>,5:17]
+[@22,67:67='a',<28>,6:8]
+[@23,69:69='=',<3>,6:10]
+[@24,71:71='b',<28>,6:12]
+[@25,72:72=';',<2>,6:13]
+[@26,78:78='}',<7>,7:4]
+[@27,79:82='else',<11>,7:5]
+[@28,83:83='{',<6>,7:9]
+[@29,93:93='g',<28>,8:8]
+[@30,94:94='(',<8>,8:9]
+[@31,95:95=')',<9>,8:10]
+[@32,96:96=';',<2>,8:11]
+[@33,102:102='}',<7>,9:4]
+[@34,104:104='}',<7>,10:0]
+[@35,106:105='<EOF>',<-1>,11:0]
+(compUnit (decl (varDecl (bType int) (varDef a = (exp (number 1))) ;)) (funcDef void main ( ) (block { (blockItem (stmt if ( (cond (exp (lval a)) > (exp (number 2))) ) (stmt (block { (blockItem (decl (varDecl (bType int) (varDef b = (exp (number 3))) ;))) (blockItem (stmt (lval a) = (exp (lval b)) ;)) })) else (stmt (block { (blockItem (stmt g ( ) ;)) })))) })) <EOF>)
+Ast:
+{
+    "type": "comp_unit_node",
+    "line": 1,
+    "pos": 0,
+    "global_defs": [
+        {
+            "type": "var_def_stmt_node",
+            "line": 1,
+            "pos": 0,
+            "var_def_nodes": [
+                {
+                    "type": "var_def_node",
+                    "line": 1,
+                    "pos": 4,
+                    "is_const": false,
+                    "is_obc": false,
+                    "name": "a",
+                    "BType": "INT",
+                    "vardef_initializer": {
+                        "type": "number_node",
+                        "line": 1,
+                        "pos": 8,
+                        "BType": "INT",
+                        "number": 1
+                    }
+                }
+            ]
+        },
+        {
+            "type": "func_def_node",
+            "line": 3,
+            "pos": 0,
+            "name": "main",
+            "body": {
+                "type": "block_node",
+                "line": 3,
+                "pos": 11,
+                "body": [
+                    {
+                        "type": "if_stmt_node",
+                        "line": 4,
+                        "pos": 4,
+                        "cond": {
+                            "type": "cond_node",
+                            "line": 4,
+                            "pos": 7,
+                            "op": "GREATER",
+                            "lhs": {
+                                "type": "lval_node",
+                                "line": 4,
+                                "pos": 7,
+                                "name": "a"
+                            },
+                            "rhs": {
+                                "type": "number_node",
+                                "line": 4,
+                                "pos": 11,
+                                "BType": "INT",
+                                "number": 2
+                            }
+                        },
+                        "If_body": {
+                            "type": "block_node",
+                            "line": 4,
+                            "pos": 13,
+                            "body": [
+                                {
+                                    "type": "var_def_stmt_node",
+                                    "line": 5,
+                                    "pos": 8,
+                                    "var_def_nodes": [
+                                        {
+                                            "type": "var_def_node",
+                                            "line": 5,
+                                            "pos": 12,
+                                            "is_const": false,
+                                            "is_obc": false,
+                                            "name": "b",
+                                            "BType": "INT",
+                                            "vardef_initializer": {
+                                                "type": "number_node",
+                                                "line": 5,
+                                                "pos": 16,
+                                                "BType": "INT",
+                                                "number": 3
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "assign_stmt_node",
+                                    "line": 6,
+                                    "pos": 8,
+                                    "target": {
+                                        "type": "lval_node",
+                                        "line": 6,
+                                        "pos": 8,
+                                        "name": "a"
+                                    },
+                                    "value": {
+                                        "type": "lval_node",
+                                        "line": 6,
+                                        "pos": 12,
+                                        "name": "b"
+                                    }
+                                }
+                            ]
+                        },
+                        "Else_body": {
+                            "type": "block_node",
+                            "line": 7,
+                            "pos": 9,
+                            "body": [
+                                {
+                                    "type": "func_call_stmt_node",
+                                    "line": 8,
+                                    "pos": 8,
+                                    "name": "g"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

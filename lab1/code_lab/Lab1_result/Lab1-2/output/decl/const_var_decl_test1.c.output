@@ -1,0 +1,107 @@
+[@0,0:3='void',<25>,1:0]
+[@1,5:5='f',<28>,1:5]
+[@2,6:6='(',<8>,1:6]
+[@3,7:7=')',<9>,1:7]
+[@4,8:8='{',<6>,1:8]
+[@5,12:16='const',<27>,2:2]
+[@6,18:20='int',<24>,2:8]
+[@7,22:22='a',<28>,2:12]
+[@8,24:24='=',<3>,2:14]
+[@9,26:26='1',<29>,2:16]
+[@10,28:28=';',<2>,2:18]
+[@11,32:36='const',<27>,3:2]
+[@12,38:40='int',<24>,3:8]
+[@13,42:42='c',<28>,3:12]
+[@14,44:44='=',<3>,3:14]
+[@15,46:46='1',<29>,3:16]
+[@16,48:48=',',<1>,3:18]
+[@17,50:50='d',<28>,3:20]
+[@18,52:52='=',<3>,3:22]
+[@19,54:54='2',<29>,3:24]
+[@20,55:55=';',<2>,3:25]
+[@21,57:57='}',<7>,4:0]
+[@22,59:58='<EOF>',<-1>,5:0]
+(compUnit (funcDef void f ( ) (block { (blockItem (decl (constDecl const (bType int) (constDef a = (exp (number 1))) ;))) (blockItem (decl (constDecl const (bType int) (constDef c = (exp (number 1))) , (constDef d = (exp (number 2))) ;))) })) <EOF>)
+Ast:
+{
+    "type": "comp_unit_node",
+    "line": 1,
+    "pos": 0,
+    "global_defs": [
+        {
+            "type": "func_def_node",
+            "line": 1,
+            "pos": 0,
+            "name": "f",
+            "body": {
+                "type": "block_node",
+                "line": 1,
+                "pos": 8,
+                "body": [
+                    {
+                        "type": "var_def_stmt_node",
+                        "line": 2,
+                        "pos": 2,
+                        "var_def_nodes": [
+                            {
+                                "type": "var_def_node",
+                                "line": 2,
+                                "pos": 12,
+                                "is_const": true,
+                                "is_obc": false,
+                                "name": "a",
+                                "BType": "INT",
+                                "vardef_initializer": {
+                                    "type": "number_node",
+                                    "line": 2,
+                                    "pos": 16,
+                                    "BType": "INT",
+                                    "number": 1
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "var_def_stmt_node",
+                        "line": 3,
+                        "pos": 2,
+                        "var_def_nodes": [
+                            {
+                                "type": "var_def_node",
+                                "line": 3,
+                                "pos": 12,
+                                "is_const": true,
+                                "is_obc": false,
+                                "name": "c",
+                                "BType": "INT",
+                                "vardef_initializer": {
+                                    "type": "number_node",
+                                    "line": 3,
+                                    "pos": 16,
+                                    "BType": "INT",
+                                    "number": 1
+                                }
+                            },
+                            {
+                                "type": "var_def_node",
+                                "line": 3,
+                                "pos": 20,
+                                "is_const": true,
+                                "is_obc": false,
+                                "name": "d",
+                                "BType": "INT",
+                                "vardef_initializer": {
+                                    "type": "number_node",
+                                    "line": 3,
+                                    "pos": 24,
+                                    "BType": "INT",
+                                    "number": 2
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

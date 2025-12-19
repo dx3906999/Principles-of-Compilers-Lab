@@ -1,0 +1,163 @@
+[@0,0:3='void',<25>,1:0]
+[@1,5:5='f',<28>,1:5]
+[@2,6:6='(',<8>,1:6]
+[@3,7:7=')',<9>,1:7]
+[@4,8:8='{',<6>,1:8]
+[@5,12:14='int',<24>,2:2]
+[@6,16:18='obc',<26>,2:6]
+[@7,20:20='a',<28>,2:10]
+[@8,21:21='[',<4>,2:11]
+[@9,22:23='10',<29>,2:12]
+[@10,24:24=']',<5>,2:14]
+[@11,25:25=';',<2>,2:15]
+[@12,29:31='int',<24>,3:2]
+[@13,33:35='obc',<26>,3:6]
+[@14,37:40='bbcc',<28>,3:10]
+[@15,41:41='[',<4>,3:14]
+[@16,42:42=']',<5>,3:15]
+[@17,44:44='=',<3>,3:17]
+[@18,46:46='{',<6>,3:19]
+[@19,47:47='1',<29>,3:20]
+[@20,48:48=',',<1>,3:21]
+[@21,49:49='2',<29>,3:22]
+[@22,50:50='}',<7>,3:23]
+[@23,51:51=';',<2>,3:24]
+[@24,55:57='int',<24>,4:2]
+[@25,59:61='obc',<26>,4:6]
+[@26,63:63='c',<28>,4:10]
+[@27,64:64='[',<4>,4:11]
+[@28,65:66='20',<29>,4:12]
+[@29,67:67=']',<5>,4:14]
+[@30,69:69='=',<3>,4:16]
+[@31,71:71='{',<6>,4:18]
+[@32,72:72='1',<29>,4:19]
+[@33,73:73=',',<1>,4:20]
+[@34,74:74='2',<29>,4:21]
+[@35,75:75='}',<7>,4:22]
+[@36,76:76=';',<2>,4:23]
+[@37,78:78='}',<7>,5:0]
+[@38,80:79='<EOF>',<-1>,6:0]
+(compUnit (funcDef void f ( ) (block { (blockItem (decl (varDecl (bType int) (varDef (array (obcArray obc (unobcArray a [ (exp (number 10)) ])))) ;))) (blockItem (decl (varDecl (bType int) (varDef (array (obcArray obc (unobcArray bbcc [ ]))) = { (exp (number 1)) , (exp (number 2)) }) ;))) (blockItem (decl (varDecl (bType int) (varDef (array (obcArray obc (unobcArray c [ (exp (number 20)) ]))) = { (exp (number 1)) , (exp (number 2)) }) ;))) })) <EOF>)
+Ast:
+{
+    "type": "comp_unit_node",
+    "line": 1,
+    "pos": 0,
+    "global_defs": [
+        {
+            "type": "func_def_node",
+            "line": 1,
+            "pos": 0,
+            "name": "f",
+            "body": {
+                "type": "block_node",
+                "line": 1,
+                "pos": 8,
+                "body": [
+                    {
+                        "type": "var_def_stmt_node",
+                        "line": 2,
+                        "pos": 2,
+                        "var_def_nodes": [
+                            {
+                                "type": "var_def_node",
+                                "line": 2,
+                                "pos": 10,
+                                "is_const": false,
+                                "is_obc": true,
+                                "name": "a",
+                                "BType": "INT",
+                                "array_length": {
+                                    "type": "number_node",
+                                    "line": 2,
+                                    "pos": 12,
+                                    "BType": "INT",
+                                    "number": 10
+                                },
+                                "array_initializers": []
+                            }
+                        ]
+                    },
+                    {
+                        "type": "var_def_stmt_node",
+                        "line": 3,
+                        "pos": 2,
+                        "var_def_nodes": [
+                            {
+                                "type": "var_def_node",
+                                "line": 3,
+                                "pos": 10,
+                                "is_const": false,
+                                "is_obc": true,
+                                "name": "bbcc",
+                                "BType": "INT",
+                                "array_length": {
+                                    "type": "number_node",
+                                    "line": 3,
+                                    "pos": 14,
+                                    "BType": "INT",
+                                    "number": 2
+                                },
+                                "array_initializers": [
+                                    {
+                                        "type": "number_node",
+                                        "line": 3,
+                                        "pos": 20,
+                                        "BType": "INT",
+                                        "number": 1
+                                    },
+                                    {
+                                        "type": "number_node",
+                                        "line": 3,
+                                        "pos": 22,
+                                        "BType": "INT",
+                                        "number": 2
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "var_def_stmt_node",
+                        "line": 4,
+                        "pos": 2,
+                        "var_def_nodes": [
+                            {
+                                "type": "var_def_node",
+                                "line": 4,
+                                "pos": 10,
+                                "is_const": false,
+                                "is_obc": true,
+                                "name": "c",
+                                "BType": "INT",
+                                "array_length": {
+                                    "type": "number_node",
+                                    "line": 4,
+                                    "pos": 12,
+                                    "BType": "INT",
+                                    "number": 20
+                                },
+                                "array_initializers": [
+                                    {
+                                        "type": "number_node",
+                                        "line": 4,
+                                        "pos": 19,
+                                        "BType": "INT",
+                                        "number": 1
+                                    },
+                                    {
+                                        "type": "number_node",
+                                        "line": 4,
+                                        "pos": 21,
+                                        "BType": "INT",
+                                        "number": 2
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

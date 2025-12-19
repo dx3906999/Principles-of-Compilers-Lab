@@ -1,0 +1,1 @@
+(compUnit (funcDef void a ( ) (block { })) (funcDef void b ( ) (block { (blockItem (stmt ;)) })) (funcDef void c ( ) (block { (blockItem (stmt a ( ) ;)) (blockItem (stmt b ( ) ;)) (blockItem (stmt b ( ) ;)) (blockItem (stmt a ( ) ;)) })) <EOF>)

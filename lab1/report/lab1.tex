@@ -1,0 +1,164 @@
+\documentclass[a4paper]{article}
+\usepackage{ctex,amsmath,amssymb,ntheorem,framed,graphicx,subfigure,tablefootnote}
+\usepackage{fancyhdr,array,pgfplots,capt-of}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{pgfplots}
+\usepackage{capt-of}
+\setCJKfamilyfont{huawen}{华文新魏}
+\newcommand{\huawen}{\CJKfamily{huawen}}
+\setCJKfamilyfont{hei}{SimHei}
+\newcommand{\hei}{\CJKfamily{hei}}
+\newcommand{\xiaosan}{\fontsize{15pt}{18pt}\selectfont}
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{a4paper,left=25mm,right=20mm,top=25mm,bottom=25mm}
+\usepackage[colorlinks,linkcolor=black]{hyperref}
+\newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}}
+
+\newcommand{\course}{操作系统研讨课}
+
+% \pagestyle{fancy}
+% \lhead{\today}
+% \chead{\course}
+% \rhead{张荣宸 2023K8009907040}
+% \renewcommand{\headrulewidth}{1pt}
+% \renewcommand{\footrulewidth}{1pt}
+% \usemintedstyle{vs}
+
+% fix red box around minted code
+\usepackage{etoolbox,xpatch}
+\makeatletter
+\AtBeginEnvironment{minted}{\dontdofcolorbox}
+\def\dontdofcolorbox{\renewcommand\fcolorbox[4][]{##4}}
+\xpatchcmd{\inputminted}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{}
+\xpatchcmd{\mintinline}{\minted@fvset}{\minted@fvset\dontdofcolorbox}{}{} % see https://tex.stackexchange.com/a/401250/
+\makeatother
+
+\setmonofont{0xProto Nerd Font}
+\usemintedstyle{vs}
+\setminted{frame=lines,bgcolor=gray!5,fontsize=\small,breaklines,framesep=2mm,mathescape,xleftmargin=2mm,xrightmargin=2mm,linenos=true,numbersep=8pt,gobble=0}
+
+\newcounter{problemname}
+\newenvironment{homework}[1][\stepcounter{problemname}\arabic{problemname}]{\begin{framed}\par\noindent\textbf{思考题#1. }}{\end{framed}\par}
+\newenvironment{solution}{\par\noindent\textbf{答. }}{\par}
+\newenvironment{note}{\par\noindent\textbf{注记. }}{\par}
+
+\def\equationautorefname{式}
+\def\footnoteautorefname{脚注}
+\def\itemautorefname{项}
+\def\figureautorefname{图}
+\def\tableautorefname{表}
+\def\partautorefname{篇}
+\def\appendixautorefname{附录}
+\def\chapterautorefname{章}
+\def\sectionautorefname{节}
+\def\subsectionautorefname{小小节}
+\def\subsubsectionautorefname{subsubsection}
+\def\paragraphautorefname{段落}
+\def\subparagraphautorefname{子段落}
+\def\FancyVerbLineautorefname{行}
+\def\theoremautorefname{定理}
+
+\begin{document}
+% \begin{center}
+%     \Large{\textbf{第一次实验}}
+% \end{center}
+\vspace*{8em}
+
+\begin{center}
+    \vspace*{6em}
+    {\huawen\fontsize{32pt}{40pt}\selectfont 中国科学院大学}\\ [4em]
+    {\huawen\fontsize{32pt}{40pt}\selectfont《编译原理》实验报告}\\ [3em]
+    {\huawen\fontsize{20}{24pt}\selectfont 基于ANTLR4的抽象语法树生成}\\ [3em]
+\end{center}
+
+\vfill
+
+\begin{center}
+
+\renewcommand{\arraystretch}{1.8}
+\newcommand{\fixedunderlinecenter}[1]{\underline{\makebox[8cm][c]{#1}}}
+\begin{tabular}{>{\raggedleft}p{3cm} p{10cm}}
+{\hei\xiaosan 姓\qquad 名}： & \fixedunderlinecenter{{\hei\xiaosan 张荣宸、毕冠华}} \\
+{\hei\xiaosan 学\qquad 号}： & \fixedunderlinecenter{{\hei\xiaosan 2023K8009907040, 2023K8009970005}} \\
+{\hei\xiaosan 专\qquad 业}： & \fixedunderlinecenter{{\hei\xiaosan 网络空间安全}} \\
+{\hei\xiaosan 完成日期}： & \fixedunderlinecenter{{\hei\xiaosan\today}} \\
+\end{tabular}
+\end{center}
+
+\newpage
+
+\section{实验小组成员及环境}
+
+本实验小组成员为张荣宸、毕冠华，学号分别为2023K8009907040, 2023K8009970005。实验环境使用docker构建镜像，在镜像中进行实验。
+
+\mintinline{bash}|Dockerfile|如下:
+
+\inputminted{dockerfile}{../code/Dockerfile}
+
+\section{SafeC文法实现}
+
+根据实验中给的测例和SafeC语言规范，本小组实现了SafeC的文法。根据antlr4的规范，拆分为词法文件和语法文件两部分。
+
+\subsection{SafeC词法实现}
+
+在本实验中，本小组根据实验指导书和实验测例给出SafeC词法如下：
+
+\inputminted{antlr}{../code/SafeCLexer.g4}
+
+\subsection{SafeC语法实现}  
+
+在本实验中，本小组根据实验指导书和实验测例给出SafeC语法如下：
+
+
+\inputminted{antlr}{../code/SafeCParser.g4}
+
+其中，expr语法规则实现了表达式的优先级和结合性，按照antlr4的优先级顺序将各生成式进行高到低排序。stmt语法规则实现了各种语句的定义。
+
+\section{抽象语法树的实现}
+
+首先简要说明本小组除了补充部分对 \verb|AstBuilder.cpp| 的其他修改。
+
+将所有 \verb|visit()| 函数返回值类型都改成对应的数据类型，比如 \\ \mintinline{cpp}|auto global_def_stmt_n = visit(decl).as<var_def_stmt_node *>();|, 以及 \\ \mintinline{cpp}|AstBuilder::visitDecl| 函数中的两个 \mintinline{cpp}|visit| 返回值均修改如下：
+    \begin{minted}{cpp}
+antlrcpp::Any AstBuilder::visitDecl(SafeCParser::DeclContext *ctx)
+{
+    if (auto const_decl = ctx->constDecl())
+    {
+        return visit(const_decl).as<var_def_stmt_node *>();
+    }
+    else if (auto var_decl = ctx->varDecl())
+    {
+        return visit(var_decl).as<var_def_stmt_node *>();
+    }
+    else
+    {
+        assert(0 && "Unknown DeclContext.");
+    }
+}
+    \end{minted}
+
+这样修改的原因主要是为了避免 \verb|antlrcpp::Any| 类型在强制转换时出现的异常。
+
+按照实验要求，本小组实现语法树如下：
+
+\inputminted{cpp}{../code/src/AstBuilder.cpp}
+
+\section{实验过程与挑战}
+
+在本次实验中，本小组先进行实验1，完善了SafeC的词法和语法定义，然后进行实验2，完成了抽象语法树的生成。在实验过程中，遇到了一些挑战：
+
+\begin{enumerate}
+    \item 在实验一中，由于使用docker环境没有gui，导致实验指导书中的方法没法直观的体现生成出来的语法树是否准确、与测例一致，于是我们组使用了 \mintinline{bash}|antlr| 中的-ps选项生成语法树图片，并对照测例进行调试，最终完成了词法和语法的实现。
+    \item 在实验二中，遇到了 \verb|antlrcpp::Any| 类型强制转换异常的问题，经过查阅资料和调试，发现是由于 \verb|visit()| 函数返回值类型不明确导致的，于是将所有 \verb|visit()| 函数的返回值类型都改成对应的数据类型，解决了该问题。
+    \item 在实验二中，遇到了未显式声明数组长度导致不知道将对应的 \mintinline{bash}|array_length| 的 \mintinline{bash}|number_node|节点的 \mintinline{bash}|pos|值放在哪里的问题。根据老师后来发的示例，我们选择将该节点的 \mintinline{bash}|pos|定在数组名后一个字节的位置。
+\end{enumerate}
+
+\section{实验建议}
+
+在实验的环境搭建部分，建议提供一个完整的docker镜像，避免同学们在环境搭建上花费过多时间。（但是也可能使不熟悉docker的同学花上更多时间）
+
+\end{document}

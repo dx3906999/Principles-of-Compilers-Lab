@@ -1,0 +1,37 @@
+[@0,0:3='void',<25>,1:0]
+[@1,5:5='f',<28>,1:5]
+[@2,6:6='(',<8>,1:6]
+[@3,7:7=')',<9>,1:7]
+[@4,8:8='{',<6>,1:8]
+[@5,13:13='{',<6>,2:3]
+[@6,14:14='}',<7>,2:4]
+[@7,16:16='}',<7>,3:0]
+[@8,18:17='<EOF>',<-1>,4:0]
+(compUnit (funcDef void f ( ) (block { (blockItem (stmt (block { }))) })) <EOF>)
+Ast:
+{
+    "type": "comp_unit_node",
+    "line": 1,
+    "pos": 0,
+    "global_defs": [
+        {
+            "type": "func_def_node",
+            "line": 1,
+            "pos": 0,
+            "name": "f",
+            "body": {
+                "type": "block_node",
+                "line": 1,
+                "pos": 8,
+                "body": [
+                    {
+                        "type": "block_node",
+                        "line": 2,
+                        "pos": 3,
+                        "body": []
+                    }
+                ]
+            }
+        }
+    ]
+}

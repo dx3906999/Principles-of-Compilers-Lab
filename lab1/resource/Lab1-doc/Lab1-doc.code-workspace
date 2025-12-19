@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Lab1"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.ejs": "html",
+			"variant": "cpp",
+			"array": "cpp",
+			"string_view": "cpp",
+			"initializer_list": "cpp",
+			"span": "cpp",
+			"utility": "cpp",
+			"cmath": "cpp"
+		}
+	}
+}
