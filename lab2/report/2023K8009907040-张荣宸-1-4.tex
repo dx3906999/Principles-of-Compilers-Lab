@@ -1,0 +1,845 @@
+\documentclass[a4paper]{article}
+\usepackage{ctex,amsmath,amssymb,ntheorem,framed,graphicx,subfigure,tablefootnote}
+\usepackage{fancyhdr,array,pgfplots,capt-of}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{pgfplots}
+\usepackage{capt-of}
+\setCJKfamilyfont{huawen}{华文新魏}
+\newcommand{\huawen}{\CJKfamily{huawen}}
+\setCJKfamilyfont{hei}{SimHei}
+\newcommand{\hei}{\CJKfamily{hei}}
+\newcommand{\xiaosan}{\fontsize{15pt}{18pt}\selectfont}
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{a4paper,left=25mm,right=20mm,top=25mm,bottom=25mm}
+\usepackage[colorlinks,linkcolor=black]{hyperref}
+\newcommand{\upcite}[1]{\textsuperscript{\textsuperscript{\cite{#1}}}}
+
+\newcommand{\course}{操作系统研讨课}
+
+% \pagestyle{fancy}
+% \lhead{\today}
+% \chead{\course}
+% \rhead{张荣宸 2023K8009907040}
+% \renewcommand{\headrulewidth}{1pt}
+% \renewcommand{\footrulewidth}{1pt}
+% \usemintedstyle{vs}
+\setmonofont{0xProto Nerd Font}
+\setminted{frame=lines,bgcolor=gray!5,fontsize=\small,breaklines,framesep=2mm,mathescape,xleftmargin=2mm,xrightmargin=2mm,linenos=true,numbersep=8pt,gobble=0}
+
+\newcounter{problemname}
+\newenvironment{homework}[1][\stepcounter{problemname}\arabic{problemname}]{\begin{framed}\par\noindent\textbf{思考题#1. }}{\end{framed}\par}
+\newenvironment{solution}{\par\noindent\textbf{答. }}{\par}
+\newenvironment{note}{\par\noindent\textbf{注记. }}{\par}
+
+\def\equationautorefname{式}
+\def\footnoteautorefname{脚注}
+\def\itemautorefname{项}
+\def\figureautorefname{图}
+\def\tableautorefname{表}
+\def\partautorefname{篇}
+\def\appendixautorefname{附录}
+\def\chapterautorefname{章}
+\def\sectionautorefname{节}
+\def\subsectionautorefname{小小节}
+\def\subsubsectionautorefname{subsubsection}
+\def\paragraphautorefname{段落}
+\def\subparagraphautorefname{子段落}
+\def\FancyVerbLineautorefname{行}
+\def\theoremautorefname{定理}
+
+\begin{document}
+% \begin{center}
+%     \Large{\textbf{第一次实验}}
+% \end{center}
+\vspace*{8em}
+
+\begin{center}
+    \vspace*{6em}
+    {\huawen\fontsize{32pt}{40pt}\selectfont 中国科学院大学}\\ [4em]
+    {\huawen\fontsize{32pt}{40pt}\selectfont《编译原理》实验报告}\\ [3em]
+    {\huawen\fontsize{20}{24pt}\selectfont 基于LLVM 的中间代码生成}\\ [3em]
+\end{center}
+
+\vfill
+
+\begin{center}
+
+\renewcommand{\arraystretch}{1.8}
+\newcommand{\fixedunderlinecenter}[1]{\underline{\makebox[8cm][c]{#1}}}
+\begin{tabular}{>{\raggedleft}p{3cm} p{10cm}}
+{\hei\xiaosan 姓\qquad 名}： & \fixedunderlinecenter{{\hei\xiaosan 张荣宸、毕冠华}} \\
+{\hei\xiaosan 学\qquad 号}： & \fixedunderlinecenter{{\hei\xiaosan 2023K8009907040、2023K8009970005}} \\
+{\hei\xiaosan 专\qquad 业}： & \fixedunderlinecenter{{\hei\xiaosan 网络空间安全}} \\
+{\hei\xiaosan 完成日期}： & \fixedunderlinecenter{{\hei\xiaosan\today}} \\
+\end{tabular}
+\end{center}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{实验小组成员及环境}
+
+本实验由张荣宸（学号：2023K8009907040）和毕冠华（学号：2023K8009970005）共同完成。实验环境用docker构建镜像，并通过ssh进行连接。
+\verb|Dockerfile|与第一次实验相同。
+
+
+
+\section{语法树各节点的中间代码生成实现}
+
+\subsection{obc检测}
+
+obc检测到当前访问的数组下标越界时，调用运行时库函数\verb|obc_check_error|报告错误，本质上是添加一段代码进行动态检测。该函数定义如下：
+
+\begin{minted}{cpp}
+void SafeCIRBuilder::obc_check(llvm::Value *index, int array_length,
+                               int node_line, int node_pos, std::string name)
+{
+    // Insert code to check if index is in [0, length).
+    // If not in range, call obc_check_error to report error.
+    // Basic logic:
+    //          ... (current insert point)
+    //          cmp = index < 0 || index >= length
+    //          br cmp, check_fail, check_success
+    //      check_fail bb:
+    //          call obc_check(node_line, node_pos, name)
+    //          ret void
+    //      check_success bb:
+    //          ... (next insert point here)
+
+    // TODO: Implement.
+
+    auto *fail_bb = llvm::BasicBlock::Create(context, "obc.fail", current_function);
+    auto *cont_bb = llvm::BasicBlock::Create(context, "obc.cont", current_function);
+
+    llvm::Value *idx32 = builder.CreateIntCast(index, builder.getInt32Ty(), true);
+    auto *lt0 = builder.CreateICmpSLT(idx32, builder.getInt32(0));
+    auto *ge_len = builder.CreateICmpSGE(idx32, builder.getInt32(array_length));
+    auto *oob = builder.CreateOr(lt0, ge_len);
+    builder.CreateCondBr(oob, fail_bb, cont_bb);
+
+    builder.SetInsertPoint(fail_bb);
+    // Call obc_check_error to report error:
+    llvm::Value *arg0_val = llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), node_line);
+    llvm::Value *arg1_val = llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), node_pos);
+    llvm::Value *arg2_val = llvm::ConstantDataArray::getString(context, name);
+    llvm::Value *arg0_ptr = lookup_variable("arg0").val_ptr;
+    llvm::Value *arg1_ptr = lookup_variable("arg1").val_ptr;
+    llvm::Value *arg2_ptr = lookup_variable("arg2").val_ptr;
+    llvm::Function *check_err = functions["obc_check_error"];
+    builder.CreateStore(arg0_val, arg0_ptr);
+    builder.CreateStore(arg1_val, arg1_ptr);
+    builder.CreateStore(arg2_val, arg2_ptr);
+    builder.CreateCall(check_err, {});
+
+    builder.CreateRetVoid();
+
+    builder.SetInsertPoint(cont_bb);
+
+    return;
+}
+\end{minted}
+
+\subsection{cond节点的生成}
+
+cond节点主要是插入了一条语句计算条件表达式的值作为左值。具体实现如下：
+
+\begin{minted}{cpp}
+void SafeCIRBuilder::visit(cond_node &node)
+{
+    // TODO: handle condition expression.
+    llvm::Value *lhs_val;
+    llvm::Value *rhs_val;
+    EXPECT_RVAL(node.lhs->accept(*this));
+    get_result_as_value(&lhs_val);
+    EXPECT_RVAL(node.rhs->accept(*this));
+    get_result_as_value(&rhs_val);
+
+    llvm::Value *cond_val;
+    switch (node.op)
+    {
+    case RelOp::EQUAL:
+        cond_val = builder.CreateICmpEQ(lhs_val, rhs_val);
+        break;
+    case RelOp::NON_EQUAL:
+        cond_val = builder.CreateICmpNE(lhs_val, rhs_val);
+        break;
+    case RelOp::LESS:
+        cond_val = builder.CreateICmpSLT(lhs_val, rhs_val);
+        break;
+    case RelOp::LESS_EQUAL:
+        cond_val = builder.CreateICmpSLE(lhs_val, rhs_val);
+        break;
+    case RelOp::GREATER:
+        cond_val = builder.CreateICmpSGT(lhs_val, rhs_val);
+        break;
+    case RelOp::GREATER_EQUAL:
+        cond_val = builder.CreateICmpSGE(lhs_val, rhs_val);
+        break;
+
+    default:
+        break;
+    }
+
+    set_value_result(cond_val);
+}
+\end{minted}
+
+\subsection{binop节点的生成}
+
+binop节点主要分为两种情况：
+
+\begin{itemize}
+    \item 如果都是子节点都返回右值，则在该节点计算右值后返回右值。
+    \item 如果其中有一个子节点返回左值，则生成计算指令然后返回左值。
+\end{itemize}
+
+具体实现如下：
+
+\begin{minted}{cpp}
+void SafeCIRBuilder::visit(binop_expr_node &node)
+{
+    // TODO: handle binary operation.
+    /*
+        Visit lhs and rhs, there can be 2 cases:
+        1. If lhs and rhs are both constant, we can calculate the result directly and provide a
+          constant result to the parent node:
+            for example: "1+2" -> set_int_result(1+2)
+        2. If lhs and rhs are not both constant, build an instruction for the binary op:
+            for example: "a+1" -> %res = add %a, 1; set_value_result(res)
+            for example: "a+b" -> %res = add %a, %b; set_value_result(res)
+    */
+    int lhs_int, rhs_int;
+    bool lhs_is_int = false, rhs_is_int = false;
+    llvm::Value *lhs_val = nullptr;
+    llvm::Value *rhs_val = nullptr;
+
+    EXPECT_RVAL(node.lhs->accept(*this));
+    lhs_is_int = get_int_result(lhs_int);
+    if (!lhs_is_int)
+    {
+        get_result_as_value(&lhs_val);
+    }
+
+    EXPECT_RVAL(node.rhs->accept(*this));
+    rhs_is_int = get_int_result(rhs_int);
+    if (!rhs_is_int)
+    {
+        get_result_as_value(&rhs_val);
+    }
+
+    if (lhs_is_int && rhs_is_int)
+    {
+        int res = 0;
+        switch (node.op)
+        {
+        case BinOp::PLUS:
+            res = lhs_int + rhs_int;
+            break;
+        case BinOp::MINUS:
+            res = lhs_int - rhs_int;
+            break;
+        case BinOp::MULTIPLY:
+            res = lhs_int * rhs_int;
+            break;
+        case BinOp::DIVIDE:
+            res = lhs_int / rhs_int;
+            break;
+        case BinOp::MODULO:
+            res = lhs_int % rhs_int;
+            break;
+        }
+        set_int_result(res);
+        return;
+    }
+
+    if (lhs_is_int)
+    {
+        lhs_val = builder.getInt32(lhs_int);
+    }
+    if (rhs_is_int)
+    {
+        rhs_val = builder.getInt32(rhs_int);
+    }
+
+    llvm::Value *res_val = nullptr;
+    switch (node.op)
+    {
+    case BinOp::PLUS:
+        res_val = builder.CreateAdd(lhs_val, rhs_val);
+        break;
+    case BinOp::MINUS:
+        res_val = builder.CreateSub(lhs_val, rhs_val);
+        break;
+    case BinOp::MULTIPLY:
+        res_val = builder.CreateMul(lhs_val, rhs_val);
+        break;
+    case BinOp::DIVIDE:
+        res_val = builder.CreateSDiv(lhs_val, rhs_val);
+        break;
+    case BinOp::MODULO:
+        res_val = builder.CreateSRem(lhs_val, rhs_val);
+        break;
+    }
+    set_value_result(res_val);
+}
+\end{minted}
+
+\subsection{unaryop节点的生成}
+
+unaryop节点主要是对其子节点生成的右值进行一元操作，分类与上面类似，具体实现如下：
+
+\begin{minted}{cpp}
+void SafeCIRBuilder::visit(unaryop_expr_node &node)
+{
+    // TODO: handle unary operation.
+    EXPECT_RVAL(node.rhs->accept(*this));
+
+    int rhs_int;
+    if (get_int_result(rhs_int))
+    {
+        switch (node.op)
+        {
+        case UnaryOp::PLUS:
+            set_int_result(rhs_int);
+            return;
+        case UnaryOp::MINUS:
+            set_int_result(-rhs_int);
+            return;
+        }
+    }
+
+    llvm::Value *rhs_val = nullptr;
+    get_result_as_value(&rhs_val);
+    llvm::Value *res_val = nullptr;
+    switch (node.op)
+    {
+    case UnaryOp::PLUS:
+        res_val = rhs_val;
+        break;
+    case UnaryOp::MINUS:
+        res_val = builder.CreateNeg(rhs_val);
+        break;
+    }
+    set_value_result(res_val);
+}
+\end{minted}
+
+\subsection{lval节点的生成}
+
+lval节点主要是访问变量或数组元素，访问obc数组元素时需要进行obc检测。在其访问数组元素时还增加了报错：如果访问数组元素时没有提供下标，则报错。
+具体实现如下：
+
+\begin{minted}{cpp}
+void SafeCIRBuilder::visit(lval_node &node)
+{
+    auto name = node.name;
+    VarInfo var_info = lookup_variable(name);
+    if (!var_info.is_valid())
+    {
+        std::cerr << node.line << ":" << node.pos << ": variable '" << name
+                  << "' is not declared" << std::endl;
+        error_flag = true;
+        return;
+    }
+
+    /*
+        Use IS_EXPECT_LVAL() to check if the parent node expects an lval or an rval. And
+          the parent must use EXPECT_LVAL() or EXPECT_RVAL() properly.
+        If lval is expected, we can directly return the lval of the variable:
+            for example: in "%a = 1" and we are visiting "%a",
+            we can return the llvm::Value* of %a.
+        If rval is expected, we need to load the value of the variable and return the loaded value.
+            for example: in "1 + *%a" and we are visiting "%a",
+            we need to return the loaded value of %a, create "%tmp = load %a" and then set_value_result(%tmp).
+    */
+
+    if (!var_info.is_array)
+    {
+        // TODO: handle scalar lval
+        if (IS_EXPECT_LVAL())
+        {
+            set_value_result(var_info.val_ptr);
+        }
+        else
+        {
+            auto *loaded = builder.CreateLoad(builder.getInt32Ty(), var_info.val_ptr);
+            set_value_result(loaded);
+        }
+    }
+    else
+    {
+        // TODO: handle array lval and call obc_check to insert obc check code for obc array.
+        if (!node.array_index)
+        {
+            std::cerr << node.line << ":" << node.pos << ": array index missing for '" << name << "'" << std::endl;
+            error_flag = true;
+            return;
+        }
+
+        EXPECT_RVAL(node.array_index->accept(*this));
+        llvm::Value *idx_val = nullptr;
+        get_result_as_value(&idx_val);
+        auto *idx32 = builder.CreateIntCast(idx_val, builder.getInt32Ty(), true);
+
+        if (var_info.is_obc)
+        {
+            obc_check(idx32, var_info.array_length, node.line, node.pos, name);
+        }
+
+        auto *arr_type = llvm::ArrayType::get(builder.getInt32Ty(), var_info.array_length);
+        auto *elem_ptr = builder.CreateInBoundsGEP(arr_type, var_info.val_ptr,
+                                                   {builder.getInt32(0), idx32});
+
+        if (IS_EXPECT_LVAL())
+        {
+            set_value_result(elem_ptr);
+        }
+        else
+        {
+            auto *loaded = builder.CreateLoad(builder.getInt32Ty(), elem_ptr);
+            set_value_result(loaded);
+        }
+        return;
+    }
+}
+\end{minted}
+
+\subsection{vardef节点的生成}
+
+vardef节点主要是变量或数组的定义与初始化。在这里，笔者根据测例添加几处报错代码：
+
+\begin{itemize}
+    \item 全局变量初始化时，若初始化表达式不是常量表达式，则报错。
+    \item 数组定义时，若数组长度不是常量表达式，则报错。
+    \item 数组定义时，若数组长度不为正数，则报错。
+    \item 数组定义时，若初始化表达式个数多于数组长度，则报错。
+    \item 数组初始化时，若初始化表达式不是常量表达式，则报错。
+    \item 变量重复定义时报错。
+\end{itemize}
+
+\begin{minted}{cpp}
+void SafeCIRBuilder::visit(var_def_node &node)
+{
+    std::string name = node.name;
+    bool is_const = node.is_const;
+    bool is_obc = node.is_obc;
+    ptr<expr_node> array_length = node.array_length;
+    ptr_vector<expr_node> initializers = node.initializers;
+
+    if (cur_scope == FLAG::GLOBAL_SCOPE)
+    { // global define
+        llvm::GlobalVariable *global_variable;
+
+        if (!array_length)
+        { // not an array
+            // TODO: create and declare global scalar
+            llvm::Constant *init = llvm::ConstantInt::get(builder.getInt32Ty(), 0);
+            if (!initializers.empty())
+            {
+                EXPECT_RVAL(initializers[0]->accept(*this));
+                int init_int;
+                if (!get_int_result(init_int))
+                {
+                    std::cerr << node.line << ":" << node.pos << ": global init must be const" << std::endl;
+                    error_flag = true;
+                    return;
+                }
+                init = llvm::ConstantInt::get(builder.getInt32Ty(), init_int);
+            }
+            global_variable = new llvm::GlobalVariable(*module, builder.getInt32Ty(), is_const,
+                                                       llvm::GlobalValue::ExternalLinkage, init, name);
+            if (!declare_variable(name, global_variable, is_const, false, false, 0))
+            {
+                std::cerr << node.line << ":" << node.pos << ": variable '" << name
+                          << "' is declared more than one times" << std::endl;
+                error_flag = true;
+                return;
+            }
+        }
+        else
+        { // is an array
+            // TODO: create and declare global array
+            EXPECT_RVAL(array_length->accept(*this));
+            int len_const;
+            if (!get_int_result(len_const))
+            {
+                std::cerr << node.line << ":" << node.pos << ": array length must be const" << std::endl;
+                error_flag = true;
+                return;
+            }
+            if (len_const <= 0)
+            {
+                std::cerr << node.line << ":" << node.pos << ": size of array '" << name << "' is not positive" << std::endl;
+                error_flag = true;
+                return;
+            }
+            if (static_cast<int>(initializers.size()) > len_const)
+            {
+                std::cerr << node.line << ":" << node.pos << ": excess elements in the initializer of array '" << name << "'" << std::endl;
+                error_flag = true;
+                return;
+            }
+            auto *arr_type = llvm::ArrayType::get(builder.getInt32Ty(), len_const);
+            std::vector<llvm::Constant *> elems;
+            elems.reserve(len_const);
+            for (int i = 0; i < len_const; ++i)
+            {
+                if (i < static_cast<int>(initializers.size()))
+                {
+                    EXPECT_RVAL(initializers[i]->accept(*this));
+                    int v;
+                    if (!get_int_result(v))
+                    {
+                        std::cerr << node.line << ":" << node.pos << ": array init must be const" << std::endl;
+                        error_flag = true;
+                        return;
+                    }
+                    elems.push_back(llvm::ConstantInt::get(builder.getInt32Ty(), v));
+                }
+                else
+                {
+                    elems.push_back(llvm::ConstantInt::get(builder.getInt32Ty(), 0));
+                }
+            }
+            auto *init_arr = llvm::ConstantArray::get(arr_type, elems);
+            global_variable = new llvm::GlobalVariable(*module, arr_type, is_const,
+                                                       llvm::GlobalValue::ExternalLinkage, init_arr, name);
+            if (!declare_variable(name, global_variable, is_const, true, is_obc, len_const))
+            {
+                std::cerr << node.line << ":" << node.pos << ": variable '" << name
+                          << "' is declared more than one times" << std::endl;
+                error_flag = true;
+                return;
+            }
+        }
+    }
+    else
+    { // local define
+        llvm::Value *local_variable;
+
+        if (!array_length)
+        { // not an array
+            // TODO: create and declare local scalar
+            local_variable = builder.CreateAlloca(builder.getInt32Ty(), nullptr, name);
+            if (!initializers.empty())
+            {
+                EXPECT_RVAL(initializers[0]->accept(*this));
+                llvm::Value *init_v;
+                get_result_as_value(&init_v);
+                builder.CreateStore(init_v, local_variable);
+            }
+            if (!declare_variable(name, local_variable, is_const, false, false, 0))
+            {
+                std::cerr << node.line << ":" << node.pos << ": variable '" << name
+                          << "' is declared more than one times" << std::endl;
+                error_flag = true;
+                return;
+            }
+        }
+        else
+        { // is an array
+            // TODO: create and declare local array
+            EXPECT_RVAL(array_length->accept(*this));
+            int len_const;
+            if (!get_int_result(len_const))
+            {
+                std::cerr << node.line << ":" << node.pos << ": array length must be const" << std::endl;
+                error_flag = true;
+                return;
+            }
+            if (len_const <= 0)
+            {
+                std::cerr << node.line << ":" << node.pos << ": size of array '" << name << "' is not positive" << std::endl;
+                error_flag = true;
+                return;
+            }
+            if (static_cast<int>(initializers.size()) > len_const)
+            {
+                std::cerr << node.line << ":" << node.pos << ": excess elements in the initializer of array '" << name << "'" << std::endl;
+                error_flag = true;
+                return;
+            }
+            auto *arr_ty = llvm::ArrayType::get(builder.getInt32Ty(), len_const);
+            local_variable = builder.CreateAlloca(arr_ty, nullptr, name);
+            auto *zero_init = llvm::ConstantAggregateZero::get(arr_ty);
+            builder.CreateStore(zero_init, local_variable);
+            for (int i = 0; i < static_cast<int>(initializers.size()) && i < len_const; ++i)
+            {
+                EXPECT_RVAL(initializers[i]->accept(*this));
+                llvm::Value *init_v;
+                get_result_as_value(&init_v);
+                auto *elem_ptr = builder.CreateInBoundsGEP(arr_ty, local_variable,
+                                                           {builder.getInt32(0), builder.getInt32(i)});
+                builder.CreateStore(init_v, elem_ptr);
+            }
+            if (!declare_variable(name, local_variable, is_const, true, is_obc, len_const))
+            {
+                std::cerr << node.line << ":" << node.pos << ": variable '" << name
+                          << "' is declared more than one times" << std::endl;
+                error_flag = true;
+                return;
+            }
+        }
+    }
+}
+\end{minted}
+
+\subsection{assign节点的生成}
+
+assign节点主要是对左值进行赋值操作，如果对应变量为常量则报错。赋值语句target期待左值，因为要将对应的值写入地址。具体实现如下：
+
+\begin{minted}{cpp}
+void SafeCIRBuilder::visit(assign_stmt_node &node)
+{
+    // TODO: get target's rval and store at value's lval.
+    VarInfo target_info;
+    target_info = lookup_variable(node.target->name);
+    if (target_info.is_const)
+    {
+        std::cerr << node.line << ":" << node.pos << ": assignment of read-only variable '"
+                  << node.target->name << "'" << std::endl;
+        error_flag = true;
+        return;
+    }
+    llvm::Value *value_val;
+    llvm::Value *target_ptr;
+    EXPECT_RVAL(node.value->accept(*this));
+    get_result_as_value(&value_val);
+    EXPECT_LVAL(node.target->accept(*this));
+    get_value_result(&target_ptr);
+    builder.CreateStore(value_val, target_ptr);
+}
+\end{minted}
+
+\subsection{if节点的生成}
+
+if节点主要有四个基本块：条件判断块、then块、else块和结束块。条件判断块中若没有终止指令，需要添加跳转到结束块。具体实现如下：
+
+\begin{minted}{cpp}
+void SafeCIRBuilder::visit(if_stmt_node &node)
+{
+    // TODO: implement if-else statement.
+    auto cond_basic_block = llvm::BasicBlock::Create(context, "if.cond", current_function);
+    auto if_basic_block = llvm::BasicBlock::Create(context, "if.body", current_function);
+    auto else_basic_block = node.else_body ? llvm::BasicBlock::Create(context, "else.body", current_function) : nullptr;
+    auto end_basic_block = llvm::BasicBlock::Create(context, "if.end", current_function);
+    builder.CreateBr(cond_basic_block);
+
+    builder.SetInsertPoint(cond_basic_block);
+    EXPECT_RVAL(node.cond->accept(*this));
+    llvm::Value *cond_val;
+    get_result_as_value(&cond_val);
+    if (!cond_val->getType()->isIntegerTy(1))
+    {
+        cond_val = builder.CreateICmpNE(cond_val, builder.getInt32(0));
+    }
+    builder.CreateCondBr(cond_val, if_basic_block, else_basic_block ? else_basic_block : end_basic_block);
+
+    builder.SetInsertPoint(if_basic_block);
+    if (node.if_body)
+    {
+        node.if_body->accept(*this);
+    }
+    auto *cur_bb = builder.GetInsertBlock();
+    if (cur_bb && !cur_bb->getTerminator())
+    {
+        builder.CreateBr(end_basic_block);
+    }
+
+    if (else_basic_block)
+    {
+        builder.SetInsertPoint(else_basic_block);
+        if (node.else_body)
+        {
+            node.else_body->accept(*this);
+        }
+        cur_bb = builder.GetInsertBlock();
+        if (cur_bb && !cur_bb->getTerminator())
+        {
+            builder.CreateBr(end_basic_block);
+        }
+    }
+
+    builder.SetInsertPoint(end_basic_block);
+}
+\end{minted}
+
+\subsection{while节点的生成}
+
+while节点主要有三个基本块：条件判断块、循环体块和结束块。条件判断块中若没有终止指令，需要添加跳转到结束块。具体实现如下：
+
+\begin{minted}{cpp}
+void SafeCIRBuilder::visit(while_stmt_node &node)
+{
+    // TODO: implement while statement.
+    auto cond_basic_block = llvm::BasicBlock::Create(context, "while.cond", current_function);
+    auto body_basic_block = llvm::BasicBlock::Create(context, "while.body", current_function);
+    auto end_basic_block = llvm::BasicBlock::Create(context, "while.end", current_function);
+
+    builder.CreateBr(cond_basic_block);
+
+    builder.SetInsertPoint(cond_basic_block);
+    EXPECT_RVAL(node.cond->accept(*this));
+    llvm::Value *cond_val;
+    get_result_as_value(&cond_val);
+    if (!cond_val->getType()->isIntegerTy(1))
+    {
+        cond_val = builder.CreateICmpNE(cond_val, builder.getInt32(0));
+    }
+    builder.CreateCondBr(cond_val, body_basic_block, end_basic_block);
+
+    builder.SetInsertPoint(body_basic_block);
+    if (node.body)
+    {
+        node.body->accept(*this);
+    }
+
+    auto *cur_bb = builder.GetInsertBlock();
+    if (cur_bb && !cur_bb->getTerminator())
+    {
+        builder.CreateBr(cond_basic_block);
+    }
+
+    builder.SetInsertPoint(end_basic_block);
+}
+\end{minted}
+
+\subsection{查找变量的实现}
+
+在查找变量时，需要从当前作用域开始，向上查找最近的同名变量。具体实现如下：
+
+\begin{minted}{cpp}
+SafeCIRBuilder::VarInfo SafeCIRBuilder::lookup_variable(std::string name)
+{
+    // TODO: find the nearest decalred variable `name`
+    for (auto it = scoped_variables.rbegin(); it != scoped_variables.rend(); ++it)
+    {
+        auto found = it->variable_map.find(name);
+        if (found != it->variable_map.end())
+        {
+            return found->second;
+        }
+    }
+    return VarInfo();
+}
+\end{minted}
+
+\section{彩蛋行为分析}
+
+将\verb|check.py| 中加入 \verb|trick.c| 文件并运行，得到如\autoref{fig_1}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[width=0.7\linewidth]{./pic/屏幕截图 2026-01-04 150122.png}
+    \caption{trick报错}
+    \label{fig_1}
+\end{figure}
+
+笔者直接使用 \verb|irbuilder| 进行编译，生成的中间代码如下：
+
+\begin{minted}{llvm}
+; ModuleID = 'trick.c'
+source_filename = "trick.c"
+
+@input_var = global i32 0
+@output_var = global i32 0
+@arg0 = global i32 0
+@arg1 = global i32 0
+@arg2 = global [17 x i8] c"SafeC IR Builder\00"
+
+declare void @input_impl(ptr)
+
+declare void @output_impl(ptr)
+
+declare void @obc_check_error_impl(ptr, ptr, ptr)
+
+define void @input() {
+entry:
+  call void @input_impl(ptr @input_var)
+  ret void
+}
+
+define void @output() {
+entry:
+  call void @output_impl(ptr @output_var)
+  ret void
+}
+
+define void @obc_check_error() {
+entry:
+  call void @obc_check_error_impl(ptr @arg0, ptr @arg1, ptr @arg2)
+  ret void
+}
+
+define void @main() {
+entry:
+  %x = alloca [8 x i32], align 4
+  store [8 x i32] zeroinitializer, ptr %x, align 4
+  %index = alloca i32, align 4
+  %addr = alloca i32, align 4
+  call void @input()
+  %0 = load i32, ptr @input_var, align 4
+  store i32 %0, ptr %index, align 4
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.body, %entry
+  %1 = load i32, ptr %index, align 4
+  %2 = icmp sge i32 %1, 0
+  br i1 %2, label %while.body, label %while.end
+
+while.body:                                       ; preds = %while.cond
+  call void @input()
+  %3 = load i32, ptr @input_var, align 4
+  store i32 %3, ptr %addr, align 4
+  %4 = load i32, ptr %addr, align 4
+  %5 = load i32, ptr %index, align 4
+  %6 = getelementptr inbounds [8 x i32], ptr %x, i32 0, i32 %5
+  store i32 %4, ptr %6, align 4
+  call void @input()
+  %7 = load i32, ptr @input_var, align 4
+  store i32 %7, ptr %index, align 4
+  br label %while.cond
+
+while.end:                                        ; preds = %while.cond
+  ret void
+}
+\end{minted}
+
+根据属于，我们可以分析出：\verb|x|是一个长度为8的整型数组，但输入的索引溢出了数组边界。第一次输入索引为12，第二次输出索引为13，由于\verb|x|不是obc数组，因此没有进行obc检测。
+
+根据\verb|main|函数的栈帧进行分析，结合x86-linux的函数调用约定，可以推测出输入的两个索引12和13分别覆盖了\verb|main|函数栈帧中的返回地址和旧的基址指针。返回地址被覆盖为\verb|0x4000000|，旧的基址指针被覆盖为\verb|0x0|。
+而\verb|0x4000000|很可能不是一个可执行的合法地址，因此当函数返回时，程序试图跳转到这个地址执行代码，导致了\verb|You are hacked|错误。
+\section{实验中遇到的问题与挑战}
+
+\begin{itemize}
+    \item 在实现obc检测时，发现\verb|runtime.cpp|中的函数签名与obc检测函数中给出的示例不符：前者只有两个参数，而示例中有三个参数。经过查阅资料及询问大语言模型，应该使用三个参数的版本，因此在\verb|runtime.cpp|中添加了第三个参数。
+    \item 在实现if和while节点时，发现如果在条件判断块或循环体块中有其他基本块，原来判断终止指令的方法不再适用，因此改为获取当前基本块并判断其是否有终止指令。
+\end{itemize}
+
+\section{SafeCIRBuilder.cpp以外的改动}
+
+在\verb|runtime.cpp|中，修改了\verb|obc_check_error|函数的参数列表，添加了第三个参数用于传递数组名称：
+
+\begin{minted}{cpp}
+auto obc_check_error_impl = Function::Create(
+    FunctionType::get(
+        Type::getVoidTy(module->getContext()),
+        {Type::getInt32PtrTy(module->getContext()),
+        Type::getInt32PtrTy(module->getContext()),
+        Type::getInt8PtrTy(module->getContext())},
+        false),
+    GlobalValue::LinkageTypes::ExternalLinkage,
+    "obc_check_error_impl",
+    module);
+\end{minted}
+
+
+
+\end{document}
